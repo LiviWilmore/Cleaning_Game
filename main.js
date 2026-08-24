@@ -269,14 +269,271 @@ function loadNextObject() {
                     if (child.isMesh) {
 
                          child.material =
-    createDirtMaterial(
-        cleanTexture,
-        dirtTexture,
-        objectData.cleanFlipX,
-        objectData.cleanFlipY,
-        objectData.dirtFlipX,
-        objectData.dirtFlipY
-    );
+   function createDirtMaterial(
+    cleanTexture,
+    dirtTexture,
+    cleanFlipX,
+    cleanFlipY,
+    dirtFlipX,
+    dirtFlipY
+) {
+
+    return new THREE.ShaderMaterial({
+
+        uniforms: {
+
+            cleanMap: {
+                value: cleanTexture
+            },
+
+            dirtMap: {
+                value: dirtTexture
+            },
+
+            maskMap: {
+                value: maskTexture
+            },
+
+            cleanFlipX: {
+                value: cleanFlipX
+            },
+
+            cleanFlipY: {
+                value: cleanFlipY
+            },
+
+            dirtFlipX: {
+                value: dirtFlipX
+            },
+
+            dirtFlipY: {
+                value: dirtFlipY
+            }
+
+        },
+
+        vertexShader: `
+
+            varying vec2 vUv;
+
+            void main() {
+
+                vUv = uv;
+
+                gl_Position =
+                    projectionMatrix *
+                    modelViewMatrix *
+                    vec4(position, 1.0);
+
+            }
+
+        `,
+
+        fragmentShader: `
+
+            uniform sampler2D cleanMap;
+            uniform sampler2D dirtMap;
+            uniform sampler2D maskMap;
+
+            uniform bool cleanFlipX;
+            uniform bool cleanFlipY;
+
+            uniform bool dirtFlipX;
+            uniform bool dirtFlipY;
+
+            varying vec2 vUv;
+
+
+            void main() {
+
+                // ==========================================
+                // CLEAN TEXTURE UV
+                // ==========================================
+
+                vec2 cleanUV = vUv;
+
+                if (cleanFlipX) {
+                    cleanUV.x = 1.0 - cleanUV.x;
+                }
+
+                if (cleanFlipY) {
+                    cleanUV.y = 1.0 - cleanUV.y;
+                }
+
+
+                // ==========================================
+                // DIRT TEXTURE UV
+                // ==========================================
+
+                vec2 dirtUV = vUv;
+
+                if (dirtFlipX) {
+                    dirtUV.x = 1.0 - dirtUV.x;
+                }
+
+                if (dirtFlipY) {
+                    dirtUV.y = 1.0 - dirtUV.y;
+                }
+
+
+                // ==========================================
+                // TEXTURES
+                // ==========================================
+
+                vec4 clean =
+                    texture2D(
+                        cleanMap,
+                        cleanUV
+                    );
+
+                vec4 dirt =
+                    texture2D(
+                        dirtMap,
+                        dirtUV
+                    );
+
+
+                // ==========================================
+                // MASK
+                // ==========================================
+
+                float mask =
+                    texture2D(
+                        maskMap,
+                        vUv
+                    ).r;
+
+
+                // ==========================================
+                // GOO EDGE
+                // ==========================================
+
+                // Size of neighbouring UV samples.
+
+                vec2 pixelSize =
+                    vec2(
+                        1.0 / 1024.0,
+                        1.0 / 1024.0
+                    );
+
+
+                float maskLeft =
+                    texture2D(
+                        maskMap,
+                        vUv + vec2(-pixelSize.x, 0.0)
+                    ).r;
+
+                float maskRight =
+                    texture2D(
+                        maskMap,
+                        vUv + vec2(pixelSize.x, 0.0)
+                    ).r;
+
+                float maskUp =
+                    texture2D(
+                        maskMap,
+                        vUv + vec2(0.0, pixelSize.y)
+                    ).r;
+
+                float maskDown =
+                    texture2D(
+                        maskMap,
+                        vUv + vec2(0.0, -pixelSize.y)
+                    ).r;
+
+
+                // Detect the boundary between
+                // dirty and clean.
+
+                float edge =
+                    abs(maskLeft - maskRight) +
+                    abs(maskUp - maskDown);
+
+
+                edge =
+                    smoothstep(
+                        0.05,
+                        0.5,
+                        edge
+                    );
+
+
+                // ==========================================
+                // WET GOO
+                // ==========================================
+
+                vec3 gooColor =
+                    dirt.rgb;
+
+
+                // Make the dirt slightly richer/darker.
+
+                gooColor *= 0.85;
+
+
+                // ==========================================
+                // FAKE GLOSSY HIGHLIGHT
+                // ==========================================
+
+                float highlight =
+                    pow(
+                        max(
+                            0.0,
+                            1.0 -
+                            distance(
+                                vUv,
+                                vec2(0.5)
+                            ) * 1.5
+                        ),
+                        6.0
+                    );
+
+
+                gooColor +=
+                    highlight * 0.20;
+
+
+                // ==========================================
+                // GOO EDGE HIGHLIGHT
+                // ==========================================
+
+                gooColor +=
+                    edge * 0.25;
+
+
+                // ==========================================
+                // GOO EDGE SHADOW
+                // ==========================================
+
+                gooColor *=
+                    1.0 - edge * 0.15;
+
+
+                // ==========================================
+                // MIX DIRT AND CLEAN
+                // ==========================================
+
+                vec3 finalColor =
+                    mix(
+                        gooColor,
+                        clean.rgb,
+                        mask
+                    );
+
+
+                gl_FragColor =
+                    vec4(
+                        finalColor,
+                        1.0
+                    );
+
+            }
+
+        `
+
+    });
+
+}
 
                     }
 
