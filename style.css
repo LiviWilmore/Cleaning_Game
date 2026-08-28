@@ -24,7 +24,7 @@ canvas {
     font-weight: bold;
     text-align: center;
 
-    white-space: nowrap;
+    white-space: pre-line;
 
     pointer-events: none;
 }
