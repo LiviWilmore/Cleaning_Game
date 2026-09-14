@@ -115,7 +115,7 @@ wristCursor.style.width = "80px";
 wristCursor.style.height = "80px";
 
 wristCursor.style.backgroundImage =
-    "url('textures/sponge.png')";
+    "url('textures/Sponge.png')";
 
 wristCursor.style.backgroundSize =
     "contain";
