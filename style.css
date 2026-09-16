@@ -1,10 +1,17 @@
+@font-face {
+    font-family: "ProjectRounded";
+    src: url("fonts/ArialRoundedMTBold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 body {
     margin: 0;
     overflow: hidden;
-    background-image:url(textures/cloud_bg.jpg);
-    background-size:cover;
+    background-image: url(textures/cloud_bg.jpg);
+    background-size: cover;
     background-attachment: fixed;
-
 }
 
 canvas {
@@ -20,8 +27,8 @@ canvas {
     transform: translateX(-50%);
 
     font-size: 40px;
-    font-family: "Arial Rounded MT Bold";
-    font-weight: bold;
+    font-family: "ProjectRounded", sans-serif;
+    font-weight: 700;
     text-align: center;
 
     white-space: pre-line;
@@ -45,7 +52,6 @@ canvas {
 
     z-index: 999998;
 }
-
 
 #textOverlay {
     background: linear-gradient(
