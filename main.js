@@ -518,7 +518,7 @@ const objects = [
 
         gooColor: GOO_COLOUR,
 
-        cleanPercentage: 11,
+        cleanPercentage: 7,
 
         position: 10,
 
@@ -541,7 +541,7 @@ const objects = [
 
         gooColor: GOO_COLOUR,
 
-        cleanPercentage: 13,
+        cleanPercentage: 7,
 
         position: 10,
 
@@ -565,7 +565,7 @@ const objects = [
 
         gooColor: GOO_COLOUR,
 
-        cleanPercentage: 7.5,
+        cleanPercentage: 4,
 
         position: 10,
 
@@ -587,7 +587,7 @@ const objects = [
 
         gooColor: GOO_COLOUR,
 
-        cleanPercentage: 7,
+        cleanPercentage: 4,
 
         position: 10,
 
@@ -609,7 +609,7 @@ const objects = [
 
         gooColor: GOO_COLOUR,
 
-        cleanPercentage: 11,
+        cleanPercentage: 7,
 
         position: 10,
 
